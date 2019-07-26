@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 动态SQL -->
+<mapper namespace="com.yc.votesys.entity.mapper.UserInfoMapper">
+	<insert id="reg" parameterType="UserInfo">
+		<!-- <selectKey keyColumn="usid" keyProperty="usid" resultType="int" order="BEFORE">
+			select seq_userInfo_usid.nextval from dual
+		</selectKey> -->
+		insert into userInfo values(#{usid}, #{uname}, #{pwd})
+	</insert>
+	
+	<select id="login" parameterType="UserInfo" resultType="UserInfo">
+		select usid, uname, pwd from userInfo where uname=#{uname} and pwd=#{pwd}
+	</select>
+</mapper>

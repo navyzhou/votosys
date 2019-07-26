@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 动态SQL -->
+<mapper namespace="com.yc.votesys.entity.mapper.TopicsMapper">
+	<insert id="addTopic" parameterType="Topics">
+		insert into topics values(#{tid}, #{tname}, #{usid}, #{topicType}, #{usids})
+	</insert>
+	
+	<insert id="addTopicItem">
+		insert into topicItem 
+		<foreach collection="list" open="(" close=")" separator="union" item="item">
+			select 0, #{item.tid}, #{item.iname}, 0 from dual
+		</foreach>
+	</insert>
+	
+	<select id="findAll" resultType="Topics">
+		select tid, tname, (select count(tno) from topicitem i where i.tid = t.tid) as usid, usids from topics t
+	</select>
+	
+	<select id="findByTno" resultMap="topicInfo" parameterType="string">
+		select t.tid, tname, usid, topicType, usids, tno, iname, nums from topics t, 
+			topicItem i where t.tid = i.tid and t.tid=#{_parameter}
+	</select>
+	
+	<resultMap type="Topics" id="topicInfo" autoMapping="true">
+		<id column="tid" property="tid"/>
+		
+		<collection property="topicItems" ofType="TopicItem" autoMapping="true">
+			<id column="tno" property="tno"/>
+		</collection>
+	</resultMap>
+	
+	
+	<update id="updateTopics" parameterType="Topics">
+		update topics set usids = #{usids} where tid = #{tid}
+	</update>
+	
+	<update id="updateTopicItems">
+		update topicItem set nums = nums + 1 where tno in
+		<foreach collection="array" item="tno" open="(" close=")" separator=",">
+			#{tno}
+		</foreach>
+	</update>
+</mapper>
